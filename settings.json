@@ -1,0 +1,24 @@
+{
+  "databaseSettings": {
+    "connectString": "mongodb://localhost:27017",
+    "databaseName": "DiscordUpdateNotifier"
+  },
+  "discordSettings": {
+    "userToken": ".Xz1maQ.07NOL56KDBqU_r29NsE0pHMnRSg", 
+    "usersToFollow": [
+      ""
+    ],
+    "guildsToFollow": [
+      ""
+    ]
+  },
+  "twitterSettings": {
+    "consumerKey": "",
+    "consumerSecret": "",
+    "authTokenKey": "-DpjAIrqHAE3ikfOypv7xpGI9gcr7Yl",
+    "authTokenSecret": ""
+  },
+  "telegramSettings": {
+  	"botToken": ""
+  }
+}

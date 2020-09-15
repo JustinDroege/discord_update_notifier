@@ -20,5 +20,16 @@
     "ts-jest": "^25.3.0",
     "typescript": "^3.8.3"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@types/fs-extra": "^9.0.1",
+    "@types/mongodb": "^3.5.27",
+    "@types/twitter": "^1.7.0",
+    "discord.js": "^11.6.2",
+    "fs-extra": "^9.0.1",
+    "inversify": "^5.0.1",
+    "mongodb": "^3.6.2",
+    "reflect-metadata": "^0.1.13",
+    "telegraf": "^3.38.0",
+    "twitter": "^1.7.1"
+  }
 }
