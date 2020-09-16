@@ -4,6 +4,7 @@ import { DiscordSubscriberService } from "./discordSubscriber.service";
 import {Client, GuildMember, Guild, User} from 'discord.js'
 import { MessageBroker } from "./messageBroker.service";
 import { inject, injectable } from "inversify";
+import { Logger } from "winston";
 
 @injectable()
 export class DiscordService implements MessageService {
@@ -11,10 +12,13 @@ export class DiscordService implements MessageService {
     private readonly discordClient: Client;
     private readonly instance = this;
 
-    constructor(
+    constructor
+    (
         @inject("DiscordSettings") private readonly discordSettings: DiscordSettings, 
         @inject(DiscordSubscriberService) private readonly discordSubscriberService: DiscordSubscriberService, 
-        @inject("MessageBroker") private readonly messageBroker: MessageBroker) 
+        @inject("MessageBroker") private readonly messageBroker: MessageBroker,
+        @inject("Logger") private readonly logger: Logger
+    )
     {
         this.discordClient = new Client()
     }
@@ -29,10 +33,16 @@ export class DiscordService implements MessageService {
 
         await this.discordClient.login(this.discordSettings.userToken);
         await ready;
+        
+        this.logger.log('info', '[%s] : Logged in', 'Discord');
+        
         await this.setupEvents();
+        
+        this.logger.log('debug', '[%s] : Events registered', 'Discord');
     }
 
     public async send(message: string): Promise<void> {
+        this.logger.log('debug', '[%s] : Send messages to subscriber', 'Discord');
         for(const discordSubscriber of await this.discordSubscriberService.getAllSubscribers()) {
             await this.sendMessageToDiscordUser(discordSubscriber.serviceId, message);
         }
@@ -43,7 +53,7 @@ export class DiscordService implements MessageService {
 
         if(!user)
             return;
-        
+        this.logger.log('debug', '[%s] : Send message to user [%s]', 'Discord', discordUserId);
         await user.send(message);
     }
 
@@ -65,6 +75,7 @@ export class DiscordService implements MessageService {
         if(!this.isGuildWhitelisted(guildMember.guild.id))
             return;
 
+        this.logger.log('debug', '[%s] : Following user is joined a guild [%s]', 'Discord', guildMember.user.username);
         await this.messageBroker.send(`Folgender Benutzer ist dem Server beigetreten: ${guildMember.user.username}`);
     }
 
@@ -72,6 +83,7 @@ export class DiscordService implements MessageService {
         if(!this.isGuildWhitelisted(guild.id))
             return;
 
+        this.logger.log('debug', '[%s] : Following user was banned from a guild [%s]', 'Discord', user.username);
         await this.messageBroker.send(`Folgender Benutzer wurde gebannt: ${user.username}`);
     }
 
@@ -80,7 +92,7 @@ export class DiscordService implements MessageService {
             return;
 
         const userName = newState.user.username;
-
+        this.logger.log('debug', '[%s] : Following user has an channel update [%s]', 'Discord', newState.user.username);
         if(!newState.voiceChannel) {
             await this.messageBroker.send(`${userName} ist disconnected`);
             return;
