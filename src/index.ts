@@ -2,19 +2,36 @@ import 'reflect-metadata';
 import { Container } from 'inversify';
 import { MessageBroker, MessageBrokerService } from './services/messageBroker.service';
 import { MongoService } from './services/mongo.service';
-import { Settings, DiscordSettings, TwitterSettings, TelegramSettings, DatabaseSettings } from './configs/settings';
+import { Settings, DiscordSettings, TwitterSettings, DatabaseSettings } from './configs/settings';
 import fs from 'fs-extra';
 import { DiscordSubscriberService } from './services/discordSubscriber.service';
 import { TelegramSubscriberService } from './services/telegramSubscriber.service';
 import { DiscordService } from './services/discord.service';
-import { TelegramService } from './services/telegram.service';
 import { TwitterService } from './services/twitter.service';
+import winston, { Logger, createLogger, format } from 'winston';
 
 
-function setupContainer(settings: Settings): Container {
+function setupLogger(): Logger {
+    const logger = createLogger({
+        level: 'debug',
+        format: format.combine(
+            format.splat(),
+            format.timestamp(),
+            format.json()
+        ),
+        transports: [
+            new winston.transports.Console({level: 'debug'})
+        ]
+    })
+
+    return logger;
+}
+
+function setupContainer(settings: Settings, logger: Logger): Container {
     
     const container = new Container();
     
+    container.bind<Logger>("Logger").toConstantValue(logger);
     container.bind<DiscordSettings>("DiscordSettings").toConstantValue(settings.discordSettings);
     container.bind<TwitterSettings>("TwitterSettings").toConstantValue(settings.twitterSettings);
     //container.bind<TelegramSettings>("TelegramSettings").toConstantValue(settings.telegramSettings);
@@ -29,6 +46,7 @@ function setupContainer(settings: Settings): Container {
     container.bind<TwitterService>(TwitterService).to(TwitterService).inSingletonScope();
 
 
+
     return container;
 }
 
@@ -38,7 +56,8 @@ async function readConfig(path: string): Promise<Settings> {
 
 (async () => {
     const settings = await readConfig('/home/justin/documents/discord_update_notifier_typescript/settings.json');
-    const container = setupContainer(settings);
+    const logger = setupLogger();
+    const container = setupContainer(settings, logger);
     
     const mongoService = container.get<MongoService>(MongoService);
     await mongoService.connect();
