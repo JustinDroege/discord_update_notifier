@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import path from 'path'
 import { Container } from 'inversify';
 import { MessageBroker, MessageBrokerService } from './services/messageBroker.service';
 import { MongoService } from './services/mongo.service';
@@ -9,7 +10,6 @@ import { TelegramSubscriberService } from './services/telegramSubscriber.service
 import { DiscordService } from './services/discord.service';
 import { TwitterService } from './services/twitter.service';
 import winston, { Logger, createLogger, format } from 'winston';
-
 
 function setupLogger(): Logger {
     const logger = createLogger({
@@ -55,7 +55,7 @@ async function readConfig(path: string): Promise<Settings> {
 }
 
 (async () => {
-    const settings = await readConfig('/home/justin/documents/discord_update_notifier_typescript/settings.json');
+    const settings = await readConfig(path.resolve(__dirname, '..', 'settings.json'));
     const logger = setupLogger();
     const container = setupContainer(settings, logger);
     
