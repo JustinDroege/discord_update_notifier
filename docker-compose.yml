@@ -7,4 +7,5 @@ services:
   
   discord-update-notifier:
     build: .
-    restart: always 
+    restart: always
+    depends_on: mongo 
