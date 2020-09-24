@@ -103,9 +103,9 @@ export class DiscordService implements MessageService {
         const deaf = newState.deaf ? 'Aus' : 'An';
 
 
-        oldState !== newState
-            ?   await this.messageBroker.send(`Folgender Benutzer hat im Channel: [${category}:${channelName}] ein Update: [${userName}] -> Mikrofon ${muted}, Ton ${deaf}`)
-            :   await this.messageBroker.send(`Folgender Benutzer [${userName}] ist im folgenden Channel gejoined: [${category}:${channelName}] -> Mikrofon ${muted}, Ton ${deaf}`);
+        oldState.id === newState.id
+            ?   await this.messageBroker.send(`Folgender Benutzer [${userName}] hat im Channel [${category}:${channelName}] ein Update -> Mikrofon ${muted}, Ton ${deaf}`)
+            :   await this.messageBroker.send(`Folgender Benutzer [${userName}] ist im folgenden Channel [${category}:${channelName}] gejoined -> Mikrofon ${muted}, Ton ${deaf}`);
         
     }
 }
