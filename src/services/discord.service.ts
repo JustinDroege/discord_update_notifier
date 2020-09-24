@@ -10,7 +10,6 @@ import { Logger } from "winston";
 export class DiscordService implements MessageService {
     
     private readonly discordClient: Client;
-    private readonly instance = this;
 
     constructor
     (
