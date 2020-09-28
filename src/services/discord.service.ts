@@ -92,7 +92,8 @@ export class DiscordService implements MessageService {
 
         const userName = newState.user.username;
         this.logger.log('debug', '[%s] : Following user has an channel update [%s]', 'Discord', newState.user.username);
-        if(!newState.voiceChannel) {
+        
+        if(!newState.voiceChannelID) {
             await this.messageBroker.send(`${userName} ist disconnected`);
             return;
         }
@@ -103,7 +104,7 @@ export class DiscordService implements MessageService {
         const deaf = newState.deaf ? 'Aus' : 'An';
 
 
-        oldState.id === newState.id
+        oldState.voiceChannelID === newState.voiceChannelID
             ?   await this.messageBroker.send(`Folgender Benutzer [${userName}] hat im Channel [${category}:${channelName}] ein Update -> Mikrofon ${muted}, Ton ${deaf}`)
             :   await this.messageBroker.send(`Folgender Benutzer [${userName}] ist im folgenden Channel [${category}:${channelName}] gejoined -> Mikrofon ${muted}, Ton ${deaf}`);
         
